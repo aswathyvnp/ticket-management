@@ -1,31 +1,33 @@
 <?php
-require "connection.php";
-require "header.php";
+    require "connection.php";
+    require "header.php";
 ?>
-
 <?php
-session_start();
-if (isset($_POST['login'])) {
-    $password = md5($_POST['password']);
-    $email = $_POST['email'];
-    $sql = 'SELECT * FROM users WHERE email=:email';
-    $statement = $connection->prepare($sql);
-    $sql_execute = $statement->execute([':email' => $db_dataemail]);
-    $db_data = $statement->fetch(PDO::FETCH_OBJ);
-    $p = $db_data->password;
-
-    if ($p == $password) {
-        $_SESSION['email'] = $email;
-        header("Location:index.php");
-    } else {
-        echo "<script>Swal.fire({
+    session_start();
+    if(isset($_POST['login']))
+    {
+        $password=md5($_POST['password']);
+        $email=$_POST['email'];
+        $sql='SELECT * FROM users WHERE email=:email';
+        $statement=$connection->prepare($sql);
+        $sql_execute=$statement->execute([':email'=>$email]);
+        $db_data=$statement->fetch(PDO::FETCH_OBJ);
+        $p=$db_data->password;
+        
+        if ($p==$password){
+            $_SESSION['email']=$email;
+            header("Location:index.php");
+        }
+        
+       else{
+        echo"<script>Swal.fire({
             icon: 'error',
             title: 'Oops...',
             text: 'Ivalid email or password !',
           })</script>";
-    }
-}
-
+       }
+    } 
+    
 ?>
 <?php
 //Import PHPMailer classes into the global namespace
@@ -36,16 +38,17 @@ use PHPMailer\PHPMailer\Exception;
 
 //Load Composer's autoloader
 require 'vendor/autoload.php';
-$db = new PDO("mysql:host=localhost;dbname=ticket_management_system", "root", "");
+ $db = new PDO("mysql:host=localhost;dbname=ticket_management_system", "root", "");
 //Create an instance; passing `true` enables exceptions
 $mail = new PHPMailer(true);
 $token = bin2hex(random_bytes(32));
 
-if (isset($_POST['password-reset-token']) && isset($_POST['email'])) {
+if(isset($_POST['password-reset-token']) && isset($_POST['email']))
+{
     $email_address = $_POST['email'];
     $query = $db->prepare("UPDATE users   SET token=:token WHERE email=:email");
     $query->execute(array(':token' => $token, ':email' => $email_address));
-    $reset_url = "http://localhost/ticket_management_system/reset_password.php?token=" . $token;
+    $reset_url = "http://localhost/ticket-management/reset_password.php?token=" . $token;
 
 
 
@@ -75,7 +78,7 @@ if (isset($_POST['password-reset-token']) && isset($_POST['email'])) {
         //Content
         $mail->isHTML(true);                                  //Set email format to HTML
         $mail->Subject = 'password reset';
-        $mail->Body    = 'To reset your password, please click the following link:' . $reset_url;
+        $mail->Body    = 'To reset your password, please click the following link:'.$reset_url;
         $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
 
         $mail->send();
@@ -85,30 +88,12 @@ if (isset($_POST['password-reset-token']) && isset($_POST['email'])) {
         // echo '<script>alert("Message not sent");</script>';
         echo "message not send";
     }
-} else {
-    //   echo "error";
+}
+else{
+//   echo "error";
 }
 ?>
 <!-- mailing end -->
-
-<!-- nav -->
-<nav class="navbar sticky-top navbar-expand-lg bg-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="#"><img src="images/logo/logo-white.png" alt="logo" /></a>
-        <button class="navbar-toggler bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse justify-content-end" id="navbarNavAltMarkup">
-            <div class="navbar-nav">
-                <a href="index.php" class="btn btn-primary nav-link text-white" aria-current="page">
-                    Home
-                </a>
-
-            </div>
-        </div>
-    </div>
-</nav>
-<!-- nav -->
 
 <div class="container-fluid row bg-secondary bg-opacity-25 m-0 vh-fitcontent py-5">
     <div class="col-12 col-md-6 col-lg-6 align-self-center row justify-content-center m-0 p-0">
@@ -120,7 +105,7 @@ if (isset($_POST['password-reset-token']) && isset($_POST['email'])) {
         <h1 class="text-center fs-1 py-0 py-md-5">LOGIN</h1>
         <form method="POST">
             <div class="mt-5">
-                <input type="email" placeholder="Enter your email" class="form-control py-3" name="email" required>
+                <input type="email" placeholder="Enter your email"  class="form-control py-3" name="email" required >
             </div>
             <div class="mt-3">
                 <input type="password" placeholder="Password" class="form-control py-3" name="password" required>
@@ -136,63 +121,67 @@ if (isset($_POST['password-reset-token']) && isset($_POST['email'])) {
             </div>
         </form>
     </div>
-
-    <!-- Modal reset password -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    
+<!-- Modal reset password -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Change password</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form action="" method="POST">
-
-                        <div><input type="email" class="form-control" id="check_mail" placeholder="Enter your email" aria-label="Email" aria-describedby="emailHelp" name="email" class="mt-2">
-                            <p id="status"></p>
-
-
-                            <small id="emailHelp" class="form-text text-muted">We'll never share your email.</small>
-                        </div>
-                </div>
-                <div class="modal-footer">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Change password</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+            <form action="" method="POST">
+               
+              <div><input type="email" class="form-control" id="check_mail" placeholder="Enter your email" aria-label="Email" aria-describedby="emailHelp" name="email" class="mt-2">
+                    <p id="status"></p>
+                    
+                                    
+                                        <small
+                                            id="emailHelp"
+                                            class="form-text text-muted"
+                                            >We'll never share your email.</small
+                                        >
+              </div>
+            </div>
+                  <div class="modal-footer">
                     <input type="submit" value="Submit" class="btn btn-primary" name="password-reset-token"></input>
                 </div>
-                </form>
-            </div>
+            </form>
+          </div>
         </div>
+      </div>
+        </form>
     </div>
-    </form>
-</div>
-
+ 
+ <?php 
+    require "footer.php";
+?>
 <script>
-    $(document).ready(() => {
-        $('#check_mail').keyup(() => {
-            let email_search = $('#check_mail').val();
-            console.log("haaai");
-            console.log(email_search);
-            $.ajax({
-                url: 'livesearch.php',
-                method: 'POST',
-                data: {
-                    email: email_search
-                },
-                success: function(data) {
 
-                    if (data != 0) {
-                        $('#status').html("Success");
-
+$(document).ready(()=>{
+    $('#check_mail').keyup(()=>{
+        let email_search=$('#check_mail').val();
+        console.log(email_search);
+        $.ajax({
+            url:'livesearch.php',
+            method:'POST',
+            data:{email:email_search},                        
+            success: function(data){
+                
+                if(data!=0){
+                    $('#status').html("Success");
+                           
                     }
 
                 }
-                else {
+                else{
                     $('#status').html("Fail");
                 }
-
+                
             })
         })
     })
+        
+
 </script>
-<?php
-require "footer.php";
-?>
