@@ -19,11 +19,11 @@ if (isset($_POST['add_event'])) {
 	$event_name = $_POST['event_name'];
 	$category = $_POST['category'];
 	$no_of_tickets = $_POST['no_of_tickets'];
-	$starting_date = ($_POST['start_date']);
-	$ending_date = $_POST['end_date'];
-	$starting_time = ($_POST['start_time']);
-	$ending_time = $_POST['end_time'];
-	$sql = 'INSERT INTO  event(event_name,category,no_of_tickets,start_date,end_date,start_time,end_time) VALUES(:event_name,:category,:no_of_tickets,:starting_date,:ending_date,starting_time,ending_time)';
+	$start_date = ($_POST['start_date']);
+	$end_date = $_POST['end_date'];
+	$start_time = ($_POST['start_time']);
+	$end_time = $_POST['end_time'];
+	$sql = 'INSERT INTO  event(name,category,no_of_tickets,start_date,end_date,start_time,end_time) VALUES(:event_name,:category,:no_of_tickets,:starting_date,:ending_date,starting_time,ending_time)';
 	$statement = $connection->prepare($sql);
 	if ($statement->execute([':event_name' => $event_name, ':category' => $category, ':starting_date' => $starting_date, ':ending_date' => $ending_date, ':starting_time' => $starting_time, ':ending_time' => $ending_time])) {
 		echo "<script>Swal.fire({
